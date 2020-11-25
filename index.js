@@ -16,8 +16,16 @@ let queriesInPastMin = 0
 let queryLimit = 120
 let lastLb = ""
 
-const queue = require("./db/queue.json")
-const users = require("./db/users.json")
+let queue = []
+let users = []
+
+if (require.resolve("./db/queue.json")) {
+    queue = require("./db/queue.json")
+    users = require("./db/users.json")
+} else {
+    fs.writeFileSync("./db/queue.json", "[]")
+    fs.writeFileSync("./db/users.json", "{}")
+}
 
 let usersFile = fs.openSync("./db/users.json", "r+")
 
@@ -52,7 +60,7 @@ const scrapeUser = async (uuid) => {
             if (fs.existsSync(folder)) {
                 asyncfs.writeFile(`${folder}/${optiCapeHash}.png`, optiCape)
             } else {
-                await asyncfs.mkdir(folder)
+                await asyncfs.mkdir(folder, {recursive: true})
                 await asyncfs.writeFile(`${folder}/${optiCapeHash}.png`, optiCape)
             }
         }
@@ -63,7 +71,7 @@ const scrapeUser = async (uuid) => {
             if (fs.existsSync(folder)) {
                 asyncfs.writeFile(`${folder}/${mcCapeHash}.png`, mcCape)
             } else {
-                await asyncfs.mkdir(folder)
+                await asyncfs.mkdir(folder, {recursive: true})
                 await asyncfs.writeFile(`${folder}/${mcCapeHash}.png`, mcCape)
             }
         }
@@ -74,7 +82,7 @@ const scrapeUser = async (uuid) => {
             if (fs.existsSync(folder)) {
                 asyncfs.writeFile(`${folder}/${skinHash}.png`, skin)
             } else {
-                await asyncfs.mkdir(folder)
+                await asyncfs.mkdir(folder, {recursive: true})
                 await asyncfs.writeFile(`${folder}/${skinHash}.png`, skin)
             }
         }
@@ -144,7 +152,7 @@ const scrapeUser = async (uuid) => {
 const indexLeaderboards = async () => {
     const date = new Date()
     const leaderboards = await hypixel.getLeaderboards()
-    minuteReqs++
+    queriesInPastMin++
     if (JSON.stringify(leaderboards) != lastLb) {
         const folder = `./db/lb/${date.getUTCFullYear()}-${date.getUTCMonth()}-${date.getUTCDay()}`
         const content = JSON.stringify(leaderboards)
@@ -152,7 +160,7 @@ const indexLeaderboards = async () => {
         if (fs.existsSync(folder)) {
             asyncfs.writeFile(`${folder}/${sha1(content)}.json`, content)
         } else {
-            await asyncfs.mkdir(folder)
+            await asyncfs.mkdir(folder, {recursive: true})
             asyncfs.writeFile(`${folder}/${sha1(content)}.json`, content)
         }
         lastLb = content
@@ -162,8 +170,6 @@ const indexLeaderboards = async () => {
         queriesInPastMin = 0
     }, 60000)
 }
-
-//reformatDb()
 
 (async () => {
     await setup()
