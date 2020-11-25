@@ -1,0 +1,23 @@
+{
+  "name": "hypixelindexer",
+  "version": "1.0.0",
+  "description": "Indexer for Hypixel stats, leaderboards and player count",
+  "main": "index.js",
+  "dependencies": {
+    "node-fetch": "^2.6.1",
+    "sha1": "^1.1.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "node --max-old-space-size=8192 ./index.js"
+  },
+  "keywords": [
+    "Hypixel",
+    "api",
+    "indexer",
+    "stats",
+    "javascript"
+  ],
+  "author": "zani",
+  "license": "UNLICENSED"
+}
